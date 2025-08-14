@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Music Album Poster Maker</title>
+  <link rel="stylesheet" href="./output.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white/20 backdrop-blur-lg p-6 rounded-2xl shadow-xl w-full max-w-lg">
+    <!-- Main Input Form -->
+    <div id="main">
+      <h1 class="text-2xl font-bold text-white text-center mb-6">🎵 Music Album Poster Maker</h1>
+
+      <!-- Upload -->
+      <label class="block mb-3 text-white font-medium">Upload Cover</label>
+      <input id="coverUpload" type="file" accept="image/*"
+        class="mb-5 block w-full text-sm text-gray-200 
+               file:mr-4 file:py-2 file:px-4 file:rounded-lg 
+               file:border-0 file:text-sm file:font-semibold 
+               file:bg-indigo-600 file:text-white hover:file:bg-indigo-700" />
+
+      <!-- Title -->
+      <label class="block mb-2 text-white font-medium">Title</label>
+      <input id="titleInput" type="text" placeholder="Enter title"
+        class="mb-4 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 text-white" />
+
+      <!-- Year -->
+      <label class="block mb-2 text-white font-medium">Release Year</label>
+      <input id="yearInput" type="number" placeholder="Enter year"
+        class="mb-4 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 text-white" />
+
+      <!-- Lyrics -->
+      <label class="block mb-2 text-white font-medium">Song List / Lyrics</label>
+      <textarea id="lyricsInput" rows="4" placeholder="Enter lyrics"
+        class="mb-6 w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 text-white"></textarea>
+
+      <!-- Generate -->
+      <button onclick="generateCover()"
+        class="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+        Generate Poster
+      </button>
+    </div>
+
+    <!-- Preview -->
+<div id="preview" class="hidden">
+  <!-- AREA POSTER SAJA -->
+  <div id="posterArea" class="mt-4 p-6 bg-white rounded-lg shadow-lg">
+    <img id="coverPreview" class="w-full rounded-lg mb-4" src="" alt="Cover">
+
+    <div class="flex items-end justify-between">
+      <h2 class="text-2xl font-bold" id="previewTitle"></h2>
+      <span class="text-sm text-gray-500" id="previewYear"></span>
+    </div>
+    <p id="previewLyrics" class="text-gray-700 mt-2 text-sm"></p>
+
+    <div class="flex justify-between mt-4 items-end">
+      <span class="text-xs text-gray-400">https://renodwi.github.io/music-poster-maker/</span>
+      <img src="./parental_sticker.png" class="w-12" alt="Parental Advisory">
+    </div>
+  </div>
+  <!-- END AREA POSTER -->
+
+  <!-- Tombol di luar area screenshot -->
+  <div class="mt-4 flex gap-2">
+    <button onclick="goBack()"
+      class="w-1/2 py-3 rounded-lg bg-gray-500 text-white hover:bg-gray-600">
+      Back
+    </button>
+    <a id="downloadLink"
+      class="w-1/2 py-3 rounded-lg bg-green-500 text-white text-center hover:bg-green-600">
+      Download JPG
+    </a>
+  </div>
+</div>
+
+  </div>
+
+  <script>
+    let coverImage = null;
+
+    document.getElementById('coverUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        coverImage = URL.createObjectURL(file);
+        document.getElementById('coverPreview').src = coverImage;
+      }
+    });
+
+function generateCover() {
+  if (!coverImage) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Silakan upload cover terlebih dahulu!',
+    });
+    return; // stop eksekusi
+  }
+
+  const title = document.getElementById('titleInput').value;
+  const year = document.getElementById('yearInput').value;
+  let text = document.getElementById("lyricsInput").value;
+
+  text = text.replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+  text = text.replace(/\n/g, "<br>");
+
+  document.getElementById('previewTitle').textContent = title;
+  document.getElementById('previewYear').textContent = year;
+  document.getElementById('previewLyrics').innerHTML = text;
+
+  document.getElementById('main').classList.add('hidden');
+  document.getElementById('preview').classList.remove('hidden');
+
+  html2canvas(document.getElementById('posterArea')).then(canvas => {
+    const link = document.getElementById('downloadLink');
+    link.href = canvas.toDataURL('image/jpeg');
+    link.download = title ? `${title}_poster.jpg` : 'album_poster.jpg';
+  });
+}
+
+    function goBack() {
+      document.getElementById('main').classList.remove('hidden');
+      document.getElementById('preview').classList.add('hidden');
+    }
+  </script>
+
+</body>
+</html>
+
+
